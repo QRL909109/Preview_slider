@@ -8,5 +8,5 @@ import Slider from './App.jsx';
 
 ReactDOM.render(
     <Slider/>,
-    document.getElementById('slider')
+    document.getElementById('example')
 );

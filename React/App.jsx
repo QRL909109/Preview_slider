@@ -1,16 +1,19 @@
 import React from 'react';
+//获取图片相关信息
+var ImgDatas = require('./data/imgDatas.json');
 
-var ImgDatas=[
-    {img:"imgs/1.jpg",h1:'Creative',h2:'DUET'},
-    {img:"imgs/2.jpg",h1:'Friendly',h2:'Happy'},
-    {img:"imgs/3.jpg",h1:'Tranquilent',h2:'Hussler'},
-    {img:"imgs/4.jpg",h1:'Loving',h2:'REBEL'},
-    {img:"imgs/5.jpg",h1:'Crazy',h2:'FRIEND'},
-    {img:"imgs/6.jpg",h1:'Insecure',h2:'Seek'},
-    {img:"imgs/7.jpg",h1:'Lucky',h2:'Frank'}
-];
+//将图片名信息转成图片URL路径信息
+ImgDatas = (function getImgURL(imageDatasArr){
+    for(var i=0,j=imageDatasArr.length; i<j; i++){
+       var singleImageData = imageDatasArr[i];
+        singleImageData.img = './imgs/'+singleImageData.img;
+        imageDatasArr[i] = singleImageData;
+    }
+    return imageDatasArr;
+})(ImgDatas);
+
 class TemplateMainI extends React.Component{
-    render (){
+    render () {
         var mainClassName = this.props.right?'main-i main-i_right':'main-i';
         mainClassName += this.props.arrange.isCenter?' main-i_active':'';
 
@@ -30,12 +33,12 @@ class TemplateCtrlI extends React.Component{
         e.preventDefault();
         this.props.center();
     }
-    render (){
+    render() {
         var ctrlClassName = 'ctrl-i';
         ctrlClassName += this.props.arrange.isCenter?' ctrl-i_active':'';
 
         return(
-            <a className={ctrlClassName} onClick={this.handleClick}>
+            <a className={ctrlClassName} onClick={this.handleClick.bind(this)}>
                 <img src={this.props.data} alt=""/>
             </a>
         )
@@ -43,6 +46,7 @@ class TemplateCtrlI extends React.Component{
 }
 class App extends React.Component{
     constructor(){
+        super();
         this.state = {
             imgsArrangeArr : []
         };
@@ -55,12 +59,14 @@ class App extends React.Component{
     rearrange(centerIndex){
         var imgsArrangeArr = this.state.imgsArrangeArr,
             imgsCenterArr = imgsArrangeArr.splice(centerIndex , 1); /*取出那组对应的数组*/
-        imgsCenterArr[0]={isCenter :true};/*把isCenter置为true*/
 
-        for(var i=0; i<imgsArrangeArr.length; i++){
+        for(var i=0; i<imgsArrangeArr.length; i++){ /*清空所有中心图片*/
             imgsArrangeArr[i] = {isCenter : false}
         }
-        imgsArrangeArr.splice(centerIndex, 0, imgsCenterArr[0]);
+
+        imgsCenterArr[0]={isCenter :true};/*把isCenter置为true*/
+
+        imgsArrangeArr.splice(centerIndex, 0, imgsCenterArr[0]); /*将centerIndex的isCenter变成true*/
         this.setState({
             imgsArrangeArr:imgsArrangeArr
         });
@@ -68,11 +74,36 @@ class App extends React.Component{
     }
     center (index){
         return ()=>{
-            this.rearrange(index).bind(this);
+            this.rearrange(index);
         };
     }
-    render(){
+    render() {
         let templateMain=[],templateCtrl=[];
+        ImgDatas.forEach((value , index)=>{
+            if (!this.state.imgsArrangeArr[index]) { /*将所有imgsArrangeArr的isCenter 置为false*/
+                this.state.imgsArrangeArr[index] = {
+                    isCenter  : false
+                };
+            }
+
+            templateMain.push(
+                <TemplateMainI
+                    key={index}
+                    data={value}
+                    center={this.center(index)}
+                    arrange={this.state.imgsArrangeArr[index]}
+                    right={index % 2? true : false} /*设置一个向左向右的转态*/
+                />
+            );
+            templateCtrl.push(
+                <TemplateCtrlI
+                    key={index}
+                    data={value.img}
+                    center={this.center(index)}
+                    arrange={this.state.imgsArrangeArr[index]}
+                />
+            );
+        });
         return(
             <div className="slider">
                 <div className="main">
