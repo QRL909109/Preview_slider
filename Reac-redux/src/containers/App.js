@@ -13,21 +13,26 @@ class App extends Component{
         return(
             <div className="slider">
                 <ShowPic
-                    imgs = {imgs}/>
+                    imgs={this.props.imgs}/>
 
                 <SetCenterFilter
-                    imgs={imgs}
-                    onCenterClick ={index => dispatch(setCenterFilter(index))
-                 }/>
+                    imgs={this.props.imgs}
+                    onCenterClick ={index => this.props.onIncrement(index)}/>
             </div>
         )
     }
 }
 
-function select(state){
+function mapStateToProps(state) {
     return {
-        imgs : state.imgs
-    }
+        imgs: state.imgs
+    };
 }
 
-export default connect(select)(App)
+function mapDispatchToProps(dispatch) {
+    return {
+        onIncrement:  (index) => dispatch(setCenterFilter(index))
+    };
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(App)
