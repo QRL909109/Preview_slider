@@ -4,12 +4,12 @@
 import React,{Component} from 'react'
 export default class CtrlI extends Component{
     render(){
-        var ctrlClassName = this.props.right == 'true'?'ctrl-i ctrl-i_right':'ctrl-i';
-        ctrlClassName += this.props.isCenter == 'true'?' ctrl-i_active':'';
+        var {isCenter , img , onClick} = this.props;
+        var ctrlClassName = 'ctrl-i' + (isCenter? ' ctrl-i_active' :'');
 
         return(
-            <a className={ctrlClassName} onClick={this.props.onClick}>
-                <img src={this.props.img} alt=""/>
+            <a className={ctrlClassName} onClick={onClick}>
+                <img src={img} alt=""/>
             </a>
         )
     }

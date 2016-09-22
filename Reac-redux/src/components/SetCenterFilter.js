@@ -10,6 +10,7 @@ export default class SetCenterFilter extends Component{
                 {this.props.imgs.map((imgi , index) =>
                     <CtrlI {...imgi}
                            key={index}
+                           isCenter = {this.props.current == index}
                            onClick={()=>this.props.onCenterClick(index)}/>
                 )}
             </div>

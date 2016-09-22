@@ -4,16 +4,17 @@
 import React,{Component} from 'react'
 export default class MainI extends Component{
     render(){
-        var mainClassName = this.props.right== 'true'?'main-i main-i_right':'main-i';
-        mainClassName += this.props.isCenter == 'true'?' main-i_active':'';
+        var {isRight , isCenter , h1 ,h2 ,img} = this.props;
+        var mainClassName = (isRight?'main-i main-i_right':'main-i')+
+            (isCenter ?' main-i_active':'');
 
         return(
                <div className={mainClassName}>
                   <div className="caption">
-                       <h2>{this.props.h1}</h2>
-                       <h3>{this.props.h2}</h3>
+                       <h2>{h1}</h2>
+                       <h3>{h2}</h3>
                   </div>
-                 <img src={this.props.img} alt=""/>
+                 <img src={img} alt=""/>
                </div>
         )
     }

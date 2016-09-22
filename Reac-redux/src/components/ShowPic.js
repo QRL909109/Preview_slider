@@ -10,7 +10,8 @@ export default class ShowPic extends Component{
             {this.props.imgs.map((imgi , index)=>
                 <MainI {...imgi}
                       key={index}
-                      onChangeCenter={() => this.props.onCenterChange(index)} />
+                      isCenter = {this.props.current == index}
+                />
             )}
             </div>
         )

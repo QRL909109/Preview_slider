@@ -9,15 +9,17 @@ import SetCenterFilter from '../components/SetCenterFilter'
 
 class App extends Component{
     render(){
-        const {dispatch , imgs } = this.props;
+        const {imgs,current} = this.props;
         return(
             <div className="slider">
                 <ShowPic
-                    imgs={this.props.imgs}/>
+                    imgs={imgs}
+                    current = {current}/>
 
                 <SetCenterFilter
-                    imgs={this.props.imgs}
-                    onCenterClick ={index => this.props.onIncrement(index)}/>
+                    imgs={imgs}
+                    current = {current}
+                    onCenterClick ={index => this.props.setCurrent(index)}/>
             </div>
         )
     }
@@ -25,13 +27,14 @@ class App extends Component{
 
 function mapStateToProps(state) {
     return {
-        imgs: state.imgs
+        imgs: state.imgs,
+        current : state.current
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        onIncrement:  (index) => dispatch(setCenterFilter(index))
+        setCurrent:  (index) => dispatch(setCenterFilter(index))
     };
 }
 
