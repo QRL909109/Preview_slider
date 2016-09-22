@@ -1,45 +1,38 @@
 import React from 'react';
 //获取图片相关信息
-var ImgDatas = require('./data/imgDatas.json');
+var imgData = require('./data/imgDatas.json');
 
 //将图片名信息转成图片URL路径信息
-ImgDatas = (function getImgURL(imageDatasArr){
-    for(var i=0,j=imageDatasArr.length; i<j; i++){
-       var singleImageData = imageDatasArr[i];
-        singleImageData.img = './imgs/'+singleImageData.img;
-        imageDatasArr[i] = singleImageData;
-    }
-    return imageDatasArr;
-})(ImgDatas);
+imgData.forEach((item, index)=>{
+    item.isRight = index % 2;
+    item.img = '/imgs/'+item.img;
+});
 
 class TemplateMainI extends React.Component{
     render () {
-        var mainClassName = this.props.right?'main-i main-i_right':'main-i';
-        mainClassName += this.props.arrange.isCenter?' main-i_active':'';
+        const props = this.props,
+            mainClassName = (props.isRight?'main-i main-i_right':'main-i')+
+                (props.isCenter?' main-i_active':'');
 
         return(
             <div className={mainClassName}>
                 <div className="caption">
-                    <h2>{this.props.data.h1}</h2>
-                    <h3>{this.props.data.h2}</h3>
+                    <h2>{props.h1}</h2>
+                    <h3>{props.h2}</h3>
                 </div>
-                <img src={this.props.data.img} alt=""/>
+                <img src={props.img} alt=""/>
             </div>
         )
     }
 }
 class TemplateCtrlI extends React.Component{
-    handleClick (e){
-        e.preventDefault();
-        this.props.center();
-    }
     render() {
-        var ctrlClassName = 'ctrl-i';
-        ctrlClassName += this.props.arrange.isCenter?' ctrl-i_active':'';
+        const props = this.props;
+        var ctrlClassName = 'ctrl-i'+ ( props.isCenter ?' ctrl-i_active':'');
 
         return(
-            <a className={ctrlClassName} onClick={this.handleClick.bind(this)}>
-                <img src={this.props.data} alt=""/>
+            <a className={ctrlClassName} onClick={props.arrange}>
+                <img src={props.src} alt=""/>
             </a>
         )
     }
@@ -48,7 +41,7 @@ class App extends React.Component{
     constructor(){
         super();
         this.state = {
-            imgsArrangeArr : []
+            current : 0
         };
     }
 
@@ -56,51 +49,31 @@ class App extends React.Component{
         this.rearrange(0);
     }
 
-    rearrange(centerIndex){
-        var imgsArrangeArr = this.state.imgsArrangeArr,
-            imgsCenterArr = imgsArrangeArr.splice(centerIndex , 1); /*取出那组对应的数组*/
-
-        for(var i=0; i<imgsArrangeArr.length; i++){ /*清空所有中心图片*/
-            imgsArrangeArr[i] = {isCenter : false}
-        }
-
-        imgsCenterArr[0]={isCenter :true};/*把isCenter置为true*/
-
-        imgsArrangeArr.splice(centerIndex, 0, imgsCenterArr[0]); /*将centerIndex的isCenter变成true*/
+    rearrange(index){
         this.setState({
-            imgsArrangeArr:imgsArrangeArr
+            current : index
         });
 
     }
-    center (index){
-        return ()=>{
-            this.rearrange(index);
-        };
-    }
     render() {
         let templateMain=[],templateCtrl=[];
-        ImgDatas.forEach((value , index)=>{
-            if (!this.state.imgsArrangeArr[index]) { /*将所有imgsArrangeArr的isCenter 置为false*/
-                this.state.imgsArrangeArr[index] = {
-                    isCenter  : false
-                };
-            }
+        imgData.forEach((value , index)=>{
+            var center = this.state.current == index;
 
             templateMain.push(
                 <TemplateMainI
                     key={index}
-                    data={value}
-                    center={this.center(index)}
-                    arrange={this.state.imgsArrangeArr[index]}
-                    right={index % 2? true : false} /*设置一个向左向右的转态*/
+                    {...value}
+                    isCenter={center}
+                    isRight={index % 2? true : false} /*设置一个向左向右的转态*/
                 />
             );
             templateCtrl.push(
                 <TemplateCtrlI
                     key={index}
-                    data={value.img}
-                    center={this.center(index)}
-                    arrange={this.state.imgsArrangeArr[index]}
+                    src={value.img}
+                    isCenter={center}
+                    arrange={this.rearrange.bind(this,index)}
                 />
             );
         });

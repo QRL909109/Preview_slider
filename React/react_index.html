@@ -12,42 +12,39 @@
 <script src="http://static.runoob.com/assets/react/browser.min.js"></script>
 <script type="text/babel">
 
-var ImgDatas=[
+var imgData=[
     {img:"imgs/1.jpg",h1:'Creative',h2:'DUET'},
     {img:"imgs/2.jpg",h1:'Friendly',h2:'Happy'},
     {img:"imgs/3.jpg",h1:'Tranquilent',h2:'Hussler'},
     {img:"imgs/4.jpg",h1:'Loving',h2:'REBEL'},
     {img:"imgs/5.jpg",h1:'Crazy',h2:'FRIEND'},
-    {img:"imgs/6.jpg",h1:'Insecure',h2:'Senek'},
+    {img:"imgs/6.jpg",h1:'Insecure',h2:'Seek'},
     {img:"imgs/7.jpg",h1:'Lucky',h2:'Frank'}
 ];
 var TemplateMainI = React.createClass({
 
     render : function(){
-        var mainClassName = this.props.right?'main-i main-i_right':'main-i';
-            mainClassName += this.props.arrange.isCenter?' main-i_active':'';
+        var props = this.props,
+            mainClassName = (props.isRight?'main-i main-i_right':'main-i')+
+                    (props.isCenter?' main-i_active':'');
 
         return(
             <div className={mainClassName}>
                 <div className="caption">
-                    <h2>{this.props.data.h1}</h2>
-                    <h3>{this.props.data.h2}</h3>
+                    <h2>{props.h1}</h2>
+                    <h3>{props.h2}</h3>
                 </div>
-                <img src={this.props.data.img} alt=""/>
+                <img src={props.img} alt=""/>
             </div>
         )
     }
 });
 var TemplateCtrlI = React.createClass({
-    handleClick : function(){
-      this.props.center();
-    },
     render : function(){
-        var ctrlClassName = 'ctrl-i';
-            ctrlClassName += this.props.arrange.isCenter?' ctrl-i_active':'';
+        var ctrlClassName = 'ctrl-i' + (this.props.isCenter?' ctrl-i_active':'');
 
         return(
-            <a className={ctrlClassName} onClick={this.handleClick}>
+            <a className={ctrlClassName} onClick={this.props.rearrange}>
                 <img src={this.props.data} alt=""/>
             </a>
             )
@@ -56,58 +53,37 @@ var TemplateCtrlI = React.createClass({
 var Slider = React.createClass({
     getInitialState : function(){
         return{
-            imgsArrangeArr : []
+            current : 0
         };
     },
-    componentDidMount : function(){
-        this.rearrange(0);
-    },
-    rearrange: function(centerIndex){
-        var imgsArrangeArr = this.state.imgsArrangeArr,
-            imgsCenterArr = imgsArrangeArr.splice(centerIndex , 1); /*取出那组对应的数组*/
-        imgsCenterArr[0]={isCenter :true};/*把isCenter置为true*/
 
-        for(var i=0; i<imgsArrangeArr.length; i++){
-            imgsArrangeArr[i] = {isCenter : false}
-        }
-        imgsArrangeArr.splice(centerIndex, 0, imgsCenterArr[0]);
+    rearrange: function(index){
         this.setState({
-            imgsArrangeArr:imgsArrangeArr
+            current:index
         });
 
     },
-    center : function(index){
-        return function(){
-            this.rearrange(index);
-        }.bind(this);
-    },
-
     render : function() {
         var templateMain=[],templateCtrl=[];
 
-        ImgDatas.forEach(function(value , index){
-            if (!this.state.imgsArrangeArr[index]) {
-                this.state.imgsArrangeArr[index] = {
-                    isCenter  : false
-                };
-            }
+        this.props.data.forEach((value , index)=>{
 
+            var center = this.state.current === index;
             templateMain.push(
                 <TemplateMainI
-                    data={value}
-                    center={this.center(index)}
-                    arrange={this.state.imgsArrangeArr[index]}
-                    right={index % 2? true : false}
+                    {...value}
+                    isCenter={center}
+                    isRight={index % 2}
                 />
             );
             templateCtrl.push(
               <TemplateCtrlI
                   data={value.img}
-                  center={this.center(index)}
-                  arrange={this.state.imgsArrangeArr[index]}
+                  isCenter={center}
+                  rearrange={this.rearrange.bind(this,index)}
               />
             );
-        }.bind(this));
+        });
 
         return (
             <div className="slider">
@@ -123,7 +99,7 @@ var Slider = React.createClass({
 });
 
 React.render(
-    <Slider/>,
+    <Slider data={imgData}/>,
     document.getElementById('example')
 );
 </script>
